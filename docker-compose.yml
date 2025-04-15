@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres
+    container_name: otakushelf_pg
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - otakushelf_pgdata:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: otakushelf_pgadmin4
+    restart: always
+    ports:
+      - '8888:80'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: sethuvamsikrishna@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - otakushelf_pgadmin4:/var/lib/pgadmin
+
+volumes:
+  otakushelf_pgdata:
+  otakushelf_pgadmin4:

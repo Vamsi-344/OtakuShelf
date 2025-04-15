@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import TheWelcome from '../components/TheWelcome.vue'
+import HeroBanner from '@/components/HeroBanner.vue'
+import CategoriesList from '@/components/CategoriesList.vue'
+import TrendingNovels from '@/components/TrendingNovels.vue'
 </script>
 
 <template>
   <main>
-    <TheWelcome />
+    <HeroBanner />
+    <CategoriesList />
+    <TrendingNovels />
   </main>
 </template>
