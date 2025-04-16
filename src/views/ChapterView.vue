@@ -1,6 +1,21 @@
 <script lang="ts" setup>
+import { ref } from 'vue'
+import { useRoute } from 'vue-router'
 import ChapterNavigation from '../components/ChapterNavigation.vue'
 import ReaderSettings from '@/components/ReaderSettings.vue'
+
+const route = useRoute()
+const novelSlug = route.params.novelSlug
+const chapterSlug = route.params.chapterSlug
+
+const chapterData = ref(null)
+
+async function getChapterInfo() {
+  const res = await fetch('http://localhost:5000/novel/' + novelSlug + '/' + chapterSlug)
+  chapterData.value = await res.json()
+}
+
+getChapterInfo()
 </script>
 
 <template>
@@ -10,7 +25,7 @@ import ReaderSettings from '@/components/ReaderSettings.vue'
         <div class="card-body p-6">
           <div class="flex items-center justify-between">
             <h1 class="text-xl font-semibold card-title">
-              That Time I Got Reincarnated as a Slime
+              {{ chapterData.novel_title }}
             </h1>
             <ReaderSettings />
           </div>
@@ -20,16 +35,13 @@ import ReaderSettings from '@/components/ReaderSettings.vue'
       <div class="card w-auto bg-base-100 card-md shadow-sm flex justify-between">
         <div class="card-body">
           <div class="justify-start">
-            <h2 class="mb-4 text-lg font-medium">Chapter 1: The Storm</h2>
+            <h2 class="mb-4 text-lg font-medium">{{ chapterData.title }}</h2>
           </div>
           <div class="prose max-w-none text-foreground">
-            <p class="mb-4">
-              The wind howled through the ancient trees, their branches creaking under the force of
-              the approaching storm. I had always known that my life would change, but I never
-              expected it to happen like this. The day had started normally enough - I went to work,
-              attended the usual meetings, and was heading home when everything went sideways.
+            <p class="mb-4" v-for="(para, index) in chapterData.body" v-bind:key="index">
+              {{ para }}
             </p>
-            <p class="mb-4">
+            <!-- <p class="mb-4">
               "Watch out!" someone screamed, but it was too late. The last thing I saw was a flash
               of steel and then... darkness. When I opened my eyes again, something was different. I
               couldn't move my arms or legs - in fact, I couldn't feel them at all. That's when I
@@ -40,7 +52,7 @@ import ReaderSettings from '@/components/ReaderSettings.vue'
               at first. But as I soon discovered, being a slime had its own unique advantages. For
               one thing, I could absorb almost anything and gain its properties. For another, I was
               practically immortal - at least when it came to conventional weapons.
-            </p>
+            </p> -->
           </div>
           <!-- <p>
             A card component has a figure, a body part, and inside body there are title and actions

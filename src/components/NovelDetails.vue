@@ -1,21 +1,33 @@
 <script lang="ts" setup>
+import { useRoute } from 'vue-router'
 import { BookOpen, Bookmark } from 'lucide-vue-next'
+
+const route = useRoute()
+
+const props = defineProps({
+  title: String,
+  slug: String,
+  image_url: String,
+  status: String,
+  description: String,
+  author: String,
+  path: String,
+})
 </script>
 
 <template>
   <div class="card lg:card-side bg-base-100 shadow-sm">
     <figure class="min-w-[320px] m-4 mr-0 rounded-md">
-      <img
-        class="h-full w-full rounded-lg object-cover"
-        src="https://cdn.novelupdates.com/images/2021/11/Devils-SoninLaw.jpg"
-        alt="Novel Image"
-      />
+      <img class="h-full w-full rounded-lg object-cover" :src="`${image_url}`" alt="Novel Image" />
     </figure>
     <div class="card-body ml-0">
-      <h1 class="card-title"><strong>Devil's Son-in-Law</strong></h1>
+      <h1 class="card-title">
+        <strong>{{ title }}</strong>
+      </h1>
       <p>
-        Completed<br /><span class="text-base-content/60">By Dian Jingling</span><br />Ecchi•
-        Xuanhuan • Action • Harem • Comedy • Mature • Slice of life • Fantasy • Adventure
+        {{ status }}<br /><span class="text-base-content/60">By {{ author }}</span
+        ><br />Ecchi• Xuanhuan • Action • Harem • Comedy • Mature • Slice of life • Fantasy •
+        Adventure
       </p>
       <div class="stats shadow">
         <div class="stat">
@@ -81,21 +93,15 @@ import { BookOpen, Bookmark } from 'lucide-vue-next'
       </div>
       <h2><strong>Synopsis</strong></h2>
       <p>
-        Chen Rui, an otaku from earth, is reborn into a human body in another world, who falls into
-        the legendary evil, brutal world of the devil called Mozu where humans are treated as food.
-        He has to survive while facing horrors of the devil, violent dragons and a variety of power
-        enemies depending on a strange super system chip and his wits. Surrounded by Devil’s
-        beauties such as black-bellied lolita princess, cold queens, violent dragons, charming
-        poisonous devils … Wanting to live in the Devil’s world is hard! Wanting to live in the
-        Devil’s world as a human is harder! Wanting a human to be the devil’s son-in-law is hardest!
-        Let us see how a small otaku uses power and strategy step by step starting from an ordinary
-        human to writing a legend as the devil’s greatest son-in-law.
+        {{ description }}
       </p>
       <div class="card-actions">
-        <button class="btn bg-blue-500 text-white">
-          <BookOpen class="w-4 h-4" />
-          Read First Chapter
-        </button>
+        <a :href="path + '/chapter-1'">
+          <button class="btn bg-blue-500 text-white">
+            <BookOpen class="w-4 h-4" />
+            Read First Chapter
+          </button>
+        </a>
         <button class="btn">
           <Bookmark class="w-4 h-4" />
           Bookmark

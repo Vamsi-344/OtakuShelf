@@ -18,12 +18,12 @@ const router = createRouter({
       component: () => import('../views/AboutView.vue'),
     },
     {
-      path: '/chapter',
-      name: 'chapter',
+      path: '/novel/:novelSlug/:chapterSlug',
+      name: 'Chapter',
       component: () => import('../views/ChapterView.vue'),
     },
     {
-      path: '/novel/devils-son-in-law',
+      path: '/novel/:novelSlug',
       name: 'Novel',
       component: () => import('../views/NovelView.vue'),
     },

@@ -4,21 +4,27 @@ import requests
 def scrapeChapter(url):
     # Get the HTML body from the url
     r = requests.get(url)
-    # print(r.text)
-
+    
     # Create a Soup from the HTML we obtained
     soup = BeautifulSoup(r.text, 'html.parser')
 
     # Filter the div which contains the chapter content
     chr_content = soup.find(attrs={"id": "chr-content"})
 
-    # Fetch both the chapter heading and the content
-    chr_head = chr_content.find("strong").text
-    chr_paras = []
-
-    for child in chr_content.find_all("p", recursive=False):
-        chr_paras.append(child.text)
+    # Get all immediate children elements
+    children = list(chr_content.children)
     
+    # Skip over any whitespace or newlines
+    first_real_element = next(child for child in children if getattr(child, 'text', '').strip())
+
+    # Extract the chapter title
+    chr_head = first_real_element.get_text(strip=True)
+
+    # Extract the content paragraphs, skipping the first element
+    chr_paras = [
+        child.get_text(strip=True)
+        for child in children
+        if child != first_real_element and child.name == 'p'
+    ]
+
     return chr_head, chr_paras
-    # print(chr_head)
-    # print(chr_paras)

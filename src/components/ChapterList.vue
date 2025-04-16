@@ -1,5 +1,13 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { ChevronRight, chevronRight } from 'lucide-vue-next'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+
+const props = defineProps({
+  chapters: Array,
+})
 
 const selectedTab = ref('chapters')
 </script>
@@ -47,31 +55,27 @@ const selectedTab = ref('chapters')
         <ul class="list bg-base-100 rounded-box shadow-md mt-4">
           <!-- <li class="p-4 pb-2 text-xs opacity-60 tracking-wide">Most played songs this week</li> -->
 
-          <li class="list-row">
-            <div class="text-4xl font-thin opacity-30 tabular-nums">01</div>
-            <div>
+          <li class="list-row" v-for="chapter in chapters" v-bind:key="chapter.slug">
+            <div class="text-4xl font-thin opacity-30 tabular-nums">
+              {{ chapter.chapter_number }}
+            </div>
+            <!-- <div>
               <img
                 class="size-10 rounded-box"
                 src="https://img.daisyui.com/images/profile/demo/1@94.webp"
               />
-            </div>
+            </div> -->
             <div class="list-col-grow">
-              <div>Dio Lupa</div>
-              <div class="text-xs uppercase font-semibold opacity-60">Remaining Reason</div>
+              <div>{{ chapter.title }}</div>
+              <div class="text-xs uppercase font-semibold opacity-60">
+                Updated {{ chapter.updated_at.slice(0, 10) }}
+              </div>
             </div>
-            <button class="btn btn-square btn-ghost">
-              <svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <g
-                  stroke-linejoin="round"
-                  stroke-linecap="round"
-                  stroke-width="2"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <path d="M6 3L20 12 6 21 6 3z"></path>
-                </g>
-              </svg>
-            </button>
+            <a :href="route.fullPath + '/' + chapter.slug">
+              <button class="btn btn-square btn-ghost w-auto p-2">
+                Read <ChevronRight class="h-4 w-4" />
+              </button>
+            </a>
           </li>
         </ul>
       </div>
