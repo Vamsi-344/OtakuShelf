@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { ChevronRight, chevronRight } from 'lucide-vue-next'
+import { ChevronRight } from 'lucide-vue-next'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-const props = defineProps({
+defineProps({
   chapters: Array,
 })
 
@@ -71,11 +71,11 @@ const selectedTab = ref('chapters')
                 Updated {{ chapter.updated_at.slice(0, 10) }}
               </div>
             </div>
-            <a :href="route.fullPath + '/' + chapter.slug">
+            <RouterLink :to="route.fullPath + '/' + chapter.slug">
               <button class="btn btn-square btn-ghost w-auto p-2">
                 Read <ChevronRight class="h-4 w-4" />
               </button>
-            </a>
+            </RouterLink>
           </li>
         </ul>
       </div>

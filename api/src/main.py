@@ -132,7 +132,7 @@ async def fetchNovel(author: str, novel_name: str, status: str, description: str
     )
     novel_id = cur.fetchone()[0]
     print("Inserted novel successfully with: ", novel_id)
-    for i in range(887, 888):
+    for i in range(1, no_of_chapters+1):
         print("Scraping for", base_url+'/chapter-'+str(i))
         heading, paras = scrapeChapter(base_url+'/chapter-'+str(i))
         print(heading)

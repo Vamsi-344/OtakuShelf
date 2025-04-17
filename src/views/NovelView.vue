@@ -17,7 +17,6 @@ async function fetchNovelInfo() {
 import { ArrowLeft } from 'lucide-vue-next'
 import NovelDetails from '@/components/NovelDetails.vue'
 import ChapterList from '@/components/ChapterList.vue'
-import PagedTable from '@/components/PagedTable.vue'
 
 fetchNovelInfo()
 </script>
@@ -25,15 +24,14 @@ fetchNovelInfo()
 <template>
   <div class="mx-auto max-w-7xl p-4 md:p-8">
     <div class="mx-auto max-w-4l m-2">
-      <a href="/">
+      <RouterLink to="/">
         <div class="btn btn-ghost text-base-content">
           <ArrowLeft class="w-4 h-4" />
           Back to Home
         </div>
-      </a>
+      </RouterLink>
     </div>
-    <!-- <pre v-if="novelInfo">{{ novelInfo }}</pre> -->
-    <!-- <pre v-if="chaptersInfo">{{ chaptersInfo }}</pre> -->
+
     <NovelDetails
       :title="`${novelInfo.title}`"
       :status="`${novelInfo.status}`"
@@ -43,7 +41,7 @@ fetchNovelInfo()
       :image_url="`${novelInfo.image_url}`"
       :path="route.path"
     />
-    <!-- <PagedTable :chapters="chaptersInfo" /> -->
+
     <ChapterList class="mt-4" :chapters="chaptersInfo" />
   </div>
 </template>

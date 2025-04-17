@@ -2,7 +2,9 @@
 
 <template>
   <div class="mx-auto max-w-7xl p-4 md:p-8">
-    <div class="rounded-xl bg-gradient-to-r from-blue-900 to-blue-800 p-8 text-white">
+    <div
+      class="rounded-xl bg-gradient-to-r from-blue-900 to-blue-800 p-8 text-white bg-[url(/hero.png)]"
+    >
       <div class="mx-auto max-w-3xl text-center">
         <h1 class="mb-4 text-4xl font-bold">Discover Amazing Light Novels</h1>
         <p class="mb-6 text-lg opacity-90">

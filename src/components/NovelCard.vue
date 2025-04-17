@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const props = defineProps({
+defineProps({
   title: String,
   slug: String,
   image_url: String,
@@ -9,7 +9,7 @@ import { Star } from 'lucide-vue-next'
 
 <template>
   <div>
-    <a :href="`/novel/${slug}`">
+    <RouterLink :to="`/novel/${slug}`">
       <div class="card bg-base-100 w-76 h-96 shadow-sm">
         <figure>
           <img :src="`${image_url}`" alt="Devil's Son-in-law" />
@@ -22,6 +22,6 @@ import { Star } from 'lucide-vue-next'
           </div>
         </div>
       </div>
-    </a>
+    </RouterLink>
   </div>
 </template>
