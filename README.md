@@ -1,6 +1,9 @@
 # OtakuShelf
 
-This template should help get you started developing with Vue 3 in Vite.
+![OtakuShelf Preview](imgs/website-light.png#gh-light-mode-only)
+![OtakuShelf Preview](imgs/website-dark.png#gh-dark-mode-only)
+
+Developing with Vue 3 in Vite.
 
 ## Recommended IDE Setup
 
