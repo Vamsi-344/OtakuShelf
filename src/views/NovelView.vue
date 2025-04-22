@@ -5,13 +5,11 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 const novelSlug = route.params.novelSlug
 const novelInfo = ref(null)
-const chaptersInfo = ref(null)
 
 async function fetchNovelInfo() {
   const res = await fetch('http://localhost:5000/novel/' + novelSlug)
   const data = await res.json()
   novelInfo.value = data['novel']
-  chaptersInfo.value = data['chapters']
 }
 
 import { ArrowLeft } from 'lucide-vue-next'
@@ -42,6 +40,6 @@ fetchNovelInfo()
       :path="route.path"
     />
 
-    <ChapterList class="mt-4" :chapters="chaptersInfo" />
+    <ChapterList class="mt-4" :novelSlug="novelSlug" />
   </div>
 </template>

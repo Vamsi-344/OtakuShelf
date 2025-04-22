@@ -1,15 +1,69 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { ChevronRight } from 'lucide-vue-next'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-defineProps({
-  chapters: Array,
+const props = defineProps({
+  novelSlug: String,
 })
 
 const selectedTab = ref('chapters')
+
+const items = ref([])
+const total = ref(0)
+const limit = 10
+const page = ref(1)
+const totalPages = ref(1)
+
+const windowSize = 5
+
+// const startPage = computed(() => Math.max(2, page.value - Math.floor(windowSize / 2)))
+// const endPage = computed(() => Math.min(totalPages.value - 1, startPage.value + windowSize - 1))
+
+// const visiblePages = computed(() => {
+//   const pages = []
+//   for (let i = startPage.value; i <= endPage.value; i++) {
+//     pages.push(i)
+//   }
+//   return pages
+// })
+const startPage = computed(() => {
+  if (totalPages.value <= windowSize + 2) return 2
+  return Math.max(
+    2,
+    Math.min(page.value - Math.floor(windowSize / 2), totalPages.value - windowSize),
+  )
+})
+
+const endPage = computed(() => {
+  if (totalPages.value <= windowSize + 2) return totalPages.value - 1
+  return Math.min(totalPages.value - 1, startPage.value + windowSize - 1)
+})
+
+const visiblePages = computed(() => {
+  const pages = []
+  for (let i = startPage.value; i <= endPage.value; i++) {
+    pages.push(i)
+  }
+  return pages
+})
+
+const fetchItems = async () => {
+  const skip = (page.value - 1) * limit
+  const res = await fetch(
+    `http://localhost:5000/chapters/${props.novelSlug}?skip=${skip}&limit=${limit}`,
+  )
+  const data = await res.json()
+  items.value = data.chapters
+  total.value = data.total
+  totalPages.value = Math.ceil(total.value / limit)
+}
+
+fetchItems()
+
+watch(page, fetchItems)
 </script>
 
 <template>
@@ -52,19 +106,102 @@ const selectedTab = ref('chapters')
           </svg>
           <input type="search" class="grow" placeholder="Search chapters..." />
         </label>
-        <ul class="list bg-base-100 rounded-box shadow-md mt-4">
-          <!-- <li class="p-4 pb-2 text-xs opacity-60 tracking-wide">Most played songs this week</li> -->
+        <!-- <div> -->
+        <!-- <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div
+              v-for="item in items"
+              :key="item.chapter_number"
+              class="card shadow-lg p-4 bg-base-100"
+            >
+              <h2 class="text-xl font-bold">{{ item.title }}</h2>
+            </div>
+          </div> -->
 
-          <li class="list-row" v-for="chapter in chapters" v-bind:key="chapter.slug">
+        <!-- <div class="join mt-4 justify-center">
+            <button class="join-item btn" :disabled="page === 1" @click="page--">Prev</button>
+
+            <button
+              class="join-item btn"
+              v-for="p in totalPages"
+              :key="p"
+              :class="{ 'btn-active': page === p }"
+              @click="page = p"
+            >
+              {{ p }}
+            </button>
+
+            <button class="join-item btn" :disabled="page === totalPages" @click="page++">
+              Next
+            </button>
+          </div>
+        </div> -->
+        <!-- <div class="join mt-4 justify-center flex flex-wrap gap-1">
+          <button class="join-item btn" :disabled="page === 1" @click="page--">Prev</button>
+
+          <button class="join-item btn" v-if="startPage > 1" @click="page = 1">1</button>
+
+          <span v-if="startPage > 2" class="join-item btn btn-disabled">...</span>
+
+          <button
+            class="join-item btn"
+            v-for="p in visiblePages"
+            :key="p"
+            :class="{ 'btn-active': page === p }"
+            @click="page = p"
+          >
+            {{ p }}
+          </button>
+
+          <span v-if="endPage < totalPages - 1" class="join-item btn btn-disabled">...</span>
+
+          <button class="join-item btn" v-if="endPage < totalPages" @click="page = totalPages">
+            {{ totalPages }}
+          </button>
+
+          <button class="join-item btn" :disabled="page === totalPages" @click="page++">
+            Next
+          </button>
+        </div> -->
+        <div v-if="totalPages > 1" class="join mt-4 justify-center flex flex-wrap gap-1">
+          <button class="join-item btn" :disabled="page === 1" @click="page--">Prev</button>
+
+          <button class="join-item btn" :class="{ 'btn-active': page === 1 }" @click="page = 1">
+            1
+          </button>
+
+          <span v-if="startPage > 2" class="join-item btn btn-disabled">...</span>
+
+          <button
+            class="join-item btn"
+            v-for="p in visiblePages"
+            :key="p"
+            :class="{ 'btn-active': page === p }"
+            @click="page = p"
+          >
+            {{ p }}
+          </button>
+
+          <span v-if="endPage < totalPages - 1" class="join-item btn btn-disabled">...</span>
+
+          <button
+            v-if="totalPages > 1"
+            class="join-item btn"
+            :class="{ 'btn-active': page === totalPages }"
+            @click="page = totalPages"
+          >
+            {{ totalPages }}
+          </button>
+
+          <button class="join-item btn" :disabled="page === totalPages" @click="page++">
+            Next
+          </button>
+        </div>
+
+        <ul class="list bg-base-100 rounded-box shadow-md mt-4">
+          <li class="list-row" v-for="chapter in items" v-bind:key="chapter.slug">
             <div class="text-4xl font-thin opacity-30 tabular-nums">
               {{ chapter.chapter_number }}
             </div>
-            <!-- <div>
-              <img
-                class="size-10 rounded-box"
-                src="https://img.daisyui.com/images/profile/demo/1@94.webp"
-              />
-            </div> -->
             <div class="list-col-grow">
               <div>{{ chapter.title }}</div>
               <div class="text-xs uppercase font-semibold opacity-60">

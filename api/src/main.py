@@ -168,22 +168,16 @@ async def getNovels():
 async def fetchNovelInfo(novel_slug: str):
     cur = conn.cursor()
     cur.execute("""
-        SELECT novels.title, novels.author, novels.status, novels.description, novels.image_url, chapters.chapter_number, chapters.title, chapters.slug, chapters.updated_at
+        SELECT novels.title, novels.author, novels.status, novels.description, novels.image_url
         FROM novels
-        INNER JOIN chapters
-        ON novels.id = chapters.novel_id
         WHERE novels.slug=%s
     """, (novel_slug,))
     rows = cur.fetchall()
     novel_details = {}
-    chapter_details = []
     for row in rows:
-        chapter = {}
-        novel_details["title"], novel_details["author"], novel_details["status"], novel_details["description"], novel_details["image_url"] = row[:5]
-        chapter["chapter_number"], chapter["title"], chapter["slug"], chapter["updated_at"] = row[5:]
-        chapter_details.append(chapter)
+        novel_details["title"], novel_details["author"], novel_details["status"], novel_details["description"], novel_details["image_url"] = row[:]
     cur.close()
-    return {"novel": novel_details, "chapters": chapter_details}
+    return {"novel": novel_details}
 
 @app.get("/novel/{novel_slug}/{chapter_slug}")
 async def fetchChapterInfo(novel_slug: str, chapter_slug: str):
@@ -198,3 +192,36 @@ async def fetchChapterInfo(novel_slug: str, chapter_slug: str):
     novel_title, chapter_title, chapter_body = cur.fetchone()[:]
     cur.close()
     return {"novel_title": novel_title, "title": chapter_title, "body": chapter_body}
+
+@app.get("/chapters/{novel_slug}")
+async def getChapters(novel_slug: str, skip: int = 0, limit: int = 10):
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT COUNT(*)
+        FROM novels
+        INNER JOIN chapters
+        ON novels.id=chapters.novel_id
+        WHERE novels.slug=%s;
+                """, (novel_slug,))
+    no_of_chapters = cur.fetchone()[:]
+    cur.execute("""
+        SELECT chapters.chapter_number, chapters.title, chapters.updated_at, chapters.slug
+        FROM novels
+        INNER JOIN chapters
+        ON novels.id=chapters.novel_id
+        WHERE novels.slug=%s
+        ORDER BY chapters.chapter_number
+        LIMIT %s OFFSET %s
+                """, (novel_slug, limit, skip))
+    rows = cur.fetchall()
+    chapters = []
+    for row in rows:
+        chapter = {}
+        chapter_number, title, updated_at, slug = row[:]
+        chapter['chapter_number'] = chapter_number
+        chapter['title'] = title
+        chapter['updated_at'] = updated_at
+        chapter['slug'] = slug
+        chapters.append(chapter)
+    cur.close()
+    return {"chapters": chapters, "total": no_of_chapters}
