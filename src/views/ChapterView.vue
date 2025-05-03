@@ -1,13 +1,14 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import ChapterNavigation from '../components/ChapterNavigation.vue'
 import ReaderSettings from '@/components/ReaderSettings.vue'
 
 const route = useRoute()
+const router = useRouter()
 const novelSlug = route.params.novelSlug
 const chapterSlug = route.params.chapterSlug
-
+const chapterNumber = Number(chapterSlug.split('-')[1])
 const chapterData = ref(null)
 
 async function getChapterInfo() {
@@ -18,6 +19,17 @@ async function getChapterInfo() {
 const fontSize = ref(null)
 const lineHeight = ref(null)
 const fontFamily = ref(null)
+
+async function onChapterChange(e) {
+  const newChapterSlug = 'chapter-' + String(e)
+  console.log(newChapterSlug)
+  console.log(novelSlug)
+  router.push({
+    name: 'Chapter',
+    params: { novelSlug: novelSlug, chapterSlug: newChapterSlug },
+    replace: true,
+  })
+}
 
 async function changeFontSize(e) {
   fontSize.value = e
@@ -40,9 +52,12 @@ getChapterInfo()
       <div class="card w-auto bg-base-100 card-md shadow-sm mb-6">
         <div class="card-body p-6">
           <div class="flex items-center justify-between">
-            <h1 class="text-xl font-semibold card-title">
-              {{ chapterData.novel_title }}
-            </h1>
+            <RouterLink :to="{ name: 'Novel', params: { novelSlug: novelSlug } }">
+              <h1 class="text-xl font-semibold card-title">
+                {{ chapterData.novel_title }}
+              </h1>
+            </RouterLink>
+
             <ReaderSettings
               v-on:changeFontSize="changeFontSize"
               v-on:changeLineHeight="changeLineHeight"
@@ -50,7 +65,11 @@ getChapterInfo()
             />
           </div>
         </div>
-        <ChapterNavigation />
+        <ChapterNavigation
+          v-on:chapterChange="onChapterChange"
+          v-bind:chapterNumber="chapterNumber"
+          v-bind:novelSlug="novelSlug"
+        />
       </div>
       <div class="card w-auto bg-base-100 card-md shadow-sm flex justify-between">
         <div class="card-body">
@@ -69,7 +88,11 @@ getChapterInfo()
         </div>
       </div>
 
-      <ChapterNavigation />
+      <ChapterNavigation
+        v-on:chapterChange="onChapterChange"
+        v-bind:chapterNumber="chapterNumber"
+        v-bind:novelSlug="novelSlug"
+      />
     </div>
   </div>
 </template>

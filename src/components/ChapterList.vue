@@ -1,13 +1,23 @@
 <script lang="ts" setup>
 import { ref, watch, computed } from 'vue'
-import { ChevronRight } from 'lucide-vue-next'
-import { useRoute } from 'vue-router'
+import {
+  ChevronsLeft,
+  ChevronsRight,
+  ChevronLeft,
+  ChevronRight,
+  Navigation,
+  SendHorizontal,
+} from 'lucide-vue-next'
+import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
+const router = useRouter()
 
 const props = defineProps({
   novelSlug: String,
 })
+
+const jumpChapter = ref('')
 
 const selectedTab = ref('chapters')
 
@@ -61,6 +71,14 @@ const fetchItems = async () => {
   totalPages.value = Math.ceil(total.value / limit)
 }
 
+function jumpToChapter() {
+  console.log(jumpChapter)
+  router.push({
+    name: 'Chapter',
+    params: { novelSlug: props.novelSlug, chapterSlug: 'chapter-' + jumpChapter.value },
+  })
+}
+
 fetchItems()
 
 watch(page, fetchItems)
@@ -92,7 +110,8 @@ watch(page, fetchItems)
     <div class="card-body">
       <div v-if="selectedTab === 'chapters'">
         <label class="input">
-          <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <Navigation class="w-4 h-4" />
+          <!-- <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <g
               stroke-linejoin="round"
               stroke-linecap="round"
@@ -103,69 +122,26 @@ watch(page, fetchItems)
               <circle cx="11" cy="11" r="8"></circle>
               <path d="m21 21-4.3-4.3"></path>
             </g>
-          </svg>
-          <input type="search" class="grow" placeholder="Search chapters..." />
+          </svg> -->
+          <input v-model="jumpChapter" @keyup.enter="jumpToChapter" placeholder="Jump to..." />
         </label>
-        <!-- <div> -->
-        <!-- <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div
-              v-for="item in items"
-              :key="item.chapter_number"
-              class="card shadow-lg p-4 bg-base-100"
-            >
-              <h2 class="text-xl font-bold">{{ item.title }}</h2>
-            </div>
-          </div> -->
+        <button class="btn btn-ghost" type="submit" v-on:click="jumpToChapter">
+          <SendHorizontal class="h-4 w-4" />
+        </button>
+        <div v-if="totalPages > 1" class="join mt-4 justify-center flex flex-wrap gap-1">
+          <button class="join-item btn" :disabled="page === 1" @click="page = 1">
+            <ChevronsLeft class="w-4 h-4" />
+          </button>
 
-        <!-- <div class="join mt-4 justify-center">
-            <button class="join-item btn" :disabled="page === 1" @click="page--">Prev</button>
-
-            <button
-              class="join-item btn"
-              v-for="p in totalPages"
-              :key="p"
-              :class="{ 'btn-active': page === p }"
-              @click="page = p"
-            >
-              {{ p }}
-            </button>
-
-            <button class="join-item btn" :disabled="page === totalPages" @click="page++">
-              Next
-            </button>
-          </div>
-        </div> -->
-        <!-- <div class="join mt-4 justify-center flex flex-wrap gap-1">
-          <button class="join-item btn" :disabled="page === 1" @click="page--">Prev</button>
-
-          <button class="join-item btn" v-if="startPage > 1" @click="page = 1">1</button>
-
-          <span v-if="startPage > 2" class="join-item btn btn-disabled">...</span>
+          <button class="join-item btn" :disabled="page === 1" @click="page--">
+            <ChevronLeft class="w-4 h-4" />
+          </button>
 
           <button
             class="join-item btn"
-            v-for="p in visiblePages"
-            :key="p"
-            :class="{ 'btn-active': page === p }"
-            @click="page = p"
+            :class="{ 'btn-active btn-primary': page === 1 }"
+            @click="page = 1"
           >
-            {{ p }}
-          </button>
-
-          <span v-if="endPage < totalPages - 1" class="join-item btn btn-disabled">...</span>
-
-          <button class="join-item btn" v-if="endPage < totalPages" @click="page = totalPages">
-            {{ totalPages }}
-          </button>
-
-          <button class="join-item btn" :disabled="page === totalPages" @click="page++">
-            Next
-          </button>
-        </div> -->
-        <div v-if="totalPages > 1" class="join mt-4 justify-center flex flex-wrap gap-1">
-          <button class="join-item btn" :disabled="page === 1" @click="page--">Prev</button>
-
-          <button class="join-item btn" :class="{ 'btn-active': page === 1 }" @click="page = 1">
             1
           </button>
 
@@ -175,7 +151,7 @@ watch(page, fetchItems)
             class="join-item btn"
             v-for="p in visiblePages"
             :key="p"
-            :class="{ 'btn-active': page === p }"
+            :class="{ 'btn-active btn-primary': page === p }"
             @click="page = p"
           >
             {{ p }}
@@ -186,14 +162,18 @@ watch(page, fetchItems)
           <button
             v-if="totalPages > 1"
             class="join-item btn"
-            :class="{ 'btn-active': page === totalPages }"
+            :class="{ 'btn-active btn-primary': page === totalPages }"
             @click="page = totalPages"
           >
             {{ totalPages }}
           </button>
 
           <button class="join-item btn" :disabled="page === totalPages" @click="page++">
-            Next
+            <ChevronRight class="w-4 h-4" />
+          </button>
+
+          <button class="join-item btn" :disabled="page === totalPages" @click="page = totalPages">
+            <ChevronsRight class="w-4 h-4" />
           </button>
         </div>
 

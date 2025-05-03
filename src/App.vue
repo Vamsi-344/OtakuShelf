@@ -46,5 +46,5 @@ import { RouterLink, RouterView } from 'vue-router'
       </ul>
     </div>
   </div>
-  <RouterView />
+  <RouterView :key="$route.fullPath" />
 </template>

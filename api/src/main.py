@@ -225,3 +225,27 @@ async def getChapters(novel_slug: str, skip: int = 0, limit: int = 10):
         chapters.append(chapter)
     cur.close()
     return {"chapters": chapters, "total": no_of_chapters}
+
+@app.get("/chaptersList/{novel_slug}")
+async def getAllChapters(novel_slug: str):
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT chapters.chapter_number, chapters.title, chapters.updated_at, chapters.slug
+        FROM novels
+        INNER JOIN chapters
+        ON novels.id=chapters.novel_id
+        WHERE novels.slug=%s
+        ORDER BY chapters.chapter_number
+                """, (novel_slug, ))
+    rows = cur.fetchall()
+    chapters = []
+    for row in rows:
+        chapter = {}
+        chapter_number, title, updated_at, slug = row[:]
+        chapter['chapter_number'] = chapter_number
+        chapter['title'] = title
+        chapter['updated_at'] = updated_at
+        chapter['slug'] = slug
+        chapters.append(chapter)
+    cur.close()
+    return {"chapters": chapters}
